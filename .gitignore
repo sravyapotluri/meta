@@ -1,0 +1,23 @@
+# Built artifacts
+*.apk
+*.aab
+*.class
+*.dex
+build/
+app/build/
+
+# Gradle cache
+.gradle/
+local.properties
+
+# Android Studio
+*.iml
+.idea/
+.DS_Store
+
+# Model file (too large for git — run scripts/download_model.sh)
+app/src/main/assets/*.tflite
+
+# Sensitive
+*.keystore
+*.jks
