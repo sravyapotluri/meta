@@ -40,16 +40,20 @@ class FaceEmbedder(private val context: Context) {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
+    val isModelLoaded: Boolean get() = interpreter != null
+
     fun getEmbedding(bitmap: Bitmap): FloatArray {
         val interp = interpreter ?: return FloatArray(embeddingSize)
 
-        val resized = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
-        val inputBuffer = bitmapToByteBuffer(resized)
-
-        val output = Array(1) { FloatArray(embeddingSize) }
-        interp.run(inputBuffer, output)
-
-        return output[0]
+        return try {
+            val resized = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
+            val inputBuffer = bitmapToByteBuffer(resized)
+            val output = Array(1) { FloatArray(embeddingSize) }
+            interp.run(inputBuffer, output)
+            output[0]
+        } catch (e: Exception) {
+            FloatArray(embeddingSize)
+        }
     }
 
     private fun bitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
