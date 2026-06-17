@@ -1,0 +1,12 @@
+{
+  "name": "glassface-web",
+  "version": "1.0.0",
+  "description": "GlassFace web interface — browser-based face recognition",
+  "scripts": {
+    "setup": "bash download-models.sh",
+    "start": "npx --yes serve . -p 3000 --no-clipboard",
+    "start:python": "python3 -m http.server 3000"
+  },
+  "keywords": ["face-recognition", "glassface"],
+  "license": "MIT"
+}

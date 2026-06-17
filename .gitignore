@@ -15,8 +15,14 @@ local.properties
 .idea/
 .DS_Store
 
-# Model file (too large for git — run scripts/download_model.sh)
+# Android TFLite model (too large for git — run scripts/download_model.sh)
 app/src/main/assets/*.tflite
+
+# Web models are tracked (small enough: ~6.5 MB total)
+# To exclude them, uncomment:
+# web/models/*.bin
+# web/models/*-shard1
+# web/models/*-shard2
 
 # Sensitive
 *.keystore

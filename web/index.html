@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlassFace — Face Recognition</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ── TOP NAV ───────────────────────────────────────────────── -->
+<nav class="topnav">
+  <div class="nav-brand">
+    <span class="brand-icon">👓</span>
+    <span class="brand-name">GlassFace</span>
+  </div>
+  <div class="nav-status">
+    <span id="modelStatus" class="status-badge loading">Loading models…</span>
+    <span id="fpsCounter" class="fps">— fps</span>
+  </div>
+  <div class="nav-actions">
+    <button id="btnSwitchView" class="btn btn-outline">Admin Panel</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     RECOGNITION VIEW
+══════════════════════════════════════════════════════════════════ -->
+<div id="recognitionView" class="view active">
+  <div class="camera-container">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+    <div id="noCamera" class="no-camera-msg hidden">
+      <div>📷</div>
+      <p>Camera not available.<br>Please allow camera access and refresh.</p>
+    </div>
+  </div>
+
+  <aside class="result-panel">
+    <div id="resultEmpty" class="result-empty">
+      <div class="result-icon">🔍</div>
+      <p>Point camera at a face to identify</p>
+    </div>
+
+    <div id="resultCard" class="result-card hidden">
+      <div class="result-photo-wrap">
+        <img id="resultPhoto" src="" alt="Person photo" />
+        <div class="result-confidence-badge" id="resultConfidence"></div>
+      </div>
+      <div class="result-info">
+        <h2 id="resultName"></h2>
+        <p id="resultTitle" class="result-title"></p>
+        <p id="resultCompany" class="result-company"></p>
+        <div class="result-details">
+          <div id="resultPhoneRow" class="detail-row hidden">
+            <span class="detail-label">📞</span>
+            <span id="resultPhone"></span>
+          </div>
+          <div id="resultEmailRow" class="detail-row hidden">
+            <span class="detail-label">✉️</span>
+            <span id="resultEmail"></span>
+          </div>
+          <div id="resultNotesRow" class="detail-row hidden">
+            <span class="detail-label">📝</span>
+            <span id="resultNotes"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultUnknown" class="result-unknown hidden">
+      <div class="result-icon">❓</div>
+      <p>Face detected but<br>not in database</p>
+    </div>
+  </aside>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADMIN VIEW
+══════════════════════════════════════════════════════════════════ -->
+<div id="adminView" class="view hidden">
+  <div class="admin-header">
+    <h1>People Database</h1>
+    <button id="btnAddPerson" class="btn btn-primary">+ Add Person</button>
+  </div>
+
+  <div id="personGrid" class="person-grid">
+    <div class="empty-grid">
+      <div style="font-size:3rem">👤</div>
+      <p>No people enrolled yet.<br>Click <strong>+ Add Person</strong> to get started.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADD / EDIT PERSON MODAL
+══════════════════════════════════════════════════════════════════ -->
+<div id="personModal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add Person</h2>
+      <button id="btnCloseModal" class="btn-icon">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Photo capture section -->
+      <div class="photo-section">
+        <div class="capture-area">
+          <video id="captureVideo" autoplay muted playsinline class="capture-video"></video>
+          <canvas id="captureCanvas" class="capture-canvas hidden"></canvas>
+          <img id="capturePreview" class="capture-preview hidden" alt="Captured face" />
+          <div id="captureFaceBox" class="capture-face-box hidden"></div>
+        </div>
+        <div class="photo-actions">
+          <button id="btnCapture" class="btn btn-primary">📸 Capture Photo</button>
+          <button id="btnRetake" class="btn btn-outline hidden">↩ Retake</button>
+          <label class="btn btn-outline">
+            📁 Upload File
+            <input id="fileInput" type="file" accept="image/*" hidden />
+          </label>
+        </div>
+        <p id="faceDetectStatus" class="face-detect-status"></p>
+      </div>
+
+      <!-- Person details form -->
+      <form id="personForm" class="person-form" autocomplete="off">
+        <div class="form-group required">
+          <label for="fieldName">Full Name</label>
+          <input id="fieldName" type="text" placeholder="e.g. Jane Smith" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fieldTitle">Job Title</label>
+            <input id="fieldTitle" type="text" placeholder="e.g. Product Manager" />
+          </div>
+          <div class="form-group">
+            <label for="fieldCompany">Company</label>
+            <input id="fieldCompany" type="text" placeholder="e.g. Acme Corp" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fieldPhone">Phone</label>
+            <input id="fieldPhone" type="tel" placeholder="+1 555 000 0000" />
+          </div>
+          <div class="form-group">
+            <label for="fieldEmail">Email</label>
+            <input id="fieldEmail" type="email" placeholder="jane@example.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="fieldNotes">Notes</label>
+          <textarea id="fieldNotes" rows="3" placeholder="Any notes…"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button id="btnCancelModal" class="btn btn-outline">Cancel</button>
+      <button id="btnSavePerson" class="btn btn-primary" disabled>Enroll Person</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────────────── -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="js/db.js"></script>
+<script src="js/recognizer.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
