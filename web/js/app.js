@@ -112,46 +112,56 @@ async function startRecognition() {
       return;
     }
 
-    const results = await Recognizer.detectAndMatch(video);
-
-    // Annotate canvas
-    const ctx = overlay.getContext('2d');
-    overlay.width  = video.videoWidth;
-    overlay.height = video.videoHeight;
-    ctx.clearRect(0, 0, overlay.width, overlay.height);
-
-    let bestMatch = null;
-
-    for (const r of results) {
-      const box    = r.detection.box;
-      const isKnown = !!r.match;
-      const color   = isKnown ? '#3ddc84' : '#f44336';
-
-      ctx.strokeStyle = color;
-      ctx.lineWidth   = 3;
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-
-      // Look up person if matched
-      let label = 'Unknown';
-      if (isKnown) {
-        const person = await DB.getPerson(r.match.personId);
-        if (person) {
-          label = person.name;
-          const conf = Math.round((1 - r.match.distance) * 100);
-          if (!bestMatch || conf > bestMatch.conf) bestMatch = { person, conf };
-        }
-      }
-
-      const fontSize = Math.max(13, Math.min(20, box.width * 0.14));
-      ctx.font = `bold ${fontSize}px Segoe UI, sans-serif`;
-      const tw = ctx.measureText(label).width;
-      ctx.fillStyle = color + 'cc';
-      ctx.fillRect(box.x, box.y - fontSize - 8, tw + 12, fontSize + 8);
-      ctx.fillStyle = '#fff';
-      ctx.fillText(label, box.x + 6, box.y - 6);
+    // Wait until video has actual pixel data
+    if (video.readyState < 2 || video.videoWidth === 0) {
+      recognitionLoop = requestAnimationFrame(loop);
+      return;
     }
 
-    updateResultPanel(results.length, bestMatch);
+    try {
+      const results = await Recognizer.detectAndMatch(video);
+
+      // Annotate canvas
+      const ctx = overlay.getContext('2d');
+      overlay.width  = video.videoWidth;
+      overlay.height = video.videoHeight;
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      let bestMatch = null;
+
+      for (const r of results) {
+        const box    = r.detection.box;
+        const isKnown = !!r.match;
+        const color   = isKnown ? '#3ddc84' : '#f44336';
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = 3;
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+
+        // Look up person if matched
+        let label = 'Unknown';
+        if (isKnown) {
+          const person = await DB.getPerson(r.match.personId);
+          if (person) {
+            label = person.name;
+            const conf = Math.round((1 - r.match.distance) * 100);
+            if (!bestMatch || conf > bestMatch.conf) bestMatch = { person, conf };
+          }
+        }
+
+        const fontSize = Math.max(13, Math.min(20, box.width * 0.14));
+        ctx.font = `bold ${fontSize}px Segoe UI, sans-serif`;
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = color + 'cc';
+        ctx.fillRect(box.x, box.y - fontSize - 8, tw + 12, fontSize + 8);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(label, box.x + 6, box.y - 6);
+      }
+
+      updateResultPanel(results.length, bestMatch);
+    } catch (e) {
+      console.warn('Detection error:', e);
+    }
 
     // FPS
     frameCount++;
@@ -234,6 +244,7 @@ btnSwitchView.addEventListener('click', () => {
     $('adminView').classList.remove('active');
     $('recognitionView').classList.add('active');
     btnSwitchView.textContent = 'Admin Panel';
+    Recognizer.rebuildIndex();
   }
 });
 
