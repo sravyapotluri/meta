@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🏎️ My Cars Podcast Studio</title>
+  <title>🏎️ My Podcast Studio</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-<!-- HEADER / STEP TRACK -->
 <header class="studio-header">
-  <div class="logo">🏎️ Cars Podcast Studio</div>
+  <div class="logo">🏎️ Podcast Studio</div>
   <div class="step-track">
     <div class="step-item active" data-step="1"><div class="step-dot">1</div><span>Upload</span></div>
     <div class="step-line"></div>
@@ -31,15 +30,15 @@
         <div class="mini-car">🏎️</div>
         <div class="mini-car2">🚗</div>
       </div>
-      <h1>Let's Make Your Cars Podcast!</h1>
-      <p class="hero-sub">Upload your notes and we'll turn them into an awesome animated video!</p>
+      <h1>Let's Make Your Podcast!</h1>
+      <p class="hero-sub">Upload your notes → we'll build an awesome animated video with YOUR voice!</p>
     </div>
 
     <div class="upload-card">
       <div class="drop-zone" id="dropZone">
         <div class="drop-icon">📂</div>
         <p class="drop-main">Drop your file here</p>
-        <p class="drop-hint">Supports .txt &nbsp;·&nbsp; .pdf &nbsp;·&nbsp; .pptx</p>
+        <p class="drop-hint">.txt &nbsp;·&nbsp; .pdf &nbsp;·&nbsp; .pptx</p>
         <button class="btn-browse" id="btnBrowse">Browse Files</button>
         <input type="file" id="fileInput" accept=".txt,.pdf,.pptx" />
         <div id="fileNameDisplay" class="file-name-display hidden"></div>
@@ -48,19 +47,19 @@
       <div class="or-divider"><span>or</span></div>
 
       <div class="paste-section">
-        <label class="field-label">📋 Paste your notes here</label>
+        <label class="field-label">📋 Paste your notes</label>
         <textarea id="pasteText" class="paste-area"
-          placeholder="Paste your notes, facts, or information about cars here...&#10;&#10;Example:&#10;The first car was invented by Karl Benz in 1885..."></textarea>
+          placeholder="Paste your notes, facts, or information here…&#10;&#10;Example:&#10;The first car was invented by Karl Benz in 1885. It had three wheels…"></textarea>
       </div>
 
       <div class="prompt-section">
         <label class="field-label">🎯 What is your podcast about?</label>
         <input type="text" id="podcastPrompt" class="prompt-input"
-          placeholder="e.g. The amazing history of cars from 1885 to today" />
+          placeholder="e.g. The amazing history of race cars" />
       </div>
 
       <button id="btnGenerate" class="btn-generate">
-        🏎️&nbsp; Build My Podcast Slides!
+        🏎️&nbsp;&nbsp;Build My Podcast Slides!
       </button>
     </div>
   </div>
@@ -76,9 +75,7 @@
     </div>
     <h2 id="processingMsg">Building your slides…</h2>
     <div class="progress-track-wrap">
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     </div>
     <p class="proc-detail" id="processingDetail">Analyzing your content…</p>
   </div>
@@ -88,22 +85,19 @@
 <main id="view-record" class="view">
   <div class="record-layout">
 
-    <!-- LEFT: Slide preview -->
+    <!-- LEFT: Canvas slide -->
     <div class="slide-panel">
-      <div class="slide-stage" id="slideStage">
-        <!-- Animated slide injected by JS -->
-      </div>
+      <canvas id="recordCanvas" class="slide-canvas"></canvas>
       <div class="slide-nav-row">
-        <button id="btnPrevSlide" class="nav-btn" title="Previous">‹</button>
+        <button id="btnPrevSlide" class="nav-btn">‹</button>
         <div class="slide-dots" id="slideDots"></div>
-        <button id="btnNextSlide" class="nav-btn" title="Next">›</button>
+        <button id="btnNextSlide" class="nav-btn">›</button>
       </div>
       <div class="slide-counter" id="slideCounter">Slide 1 of 1</div>
     </div>
 
     <!-- RIGHT: Script + Recorder -->
     <div class="record-panel">
-
       <div class="script-section">
         <h3>📝 Read This Out Loud:</h3>
         <div class="script-text" id="scriptText"></div>
@@ -115,45 +109,27 @@
           <span class="rec-status-text" id="recStatusText">Ready to record</span>
         </div>
 
-        <!-- 3-2-1 countdown -->
+        <!-- Countdown -->
         <div class="countdown-overlay hidden" id="countdownOverlay">
           <div class="countdown-number" id="countdownNumber">3</div>
         </div>
 
-        <!-- Live waveform -->
         <canvas class="waveform-canvas" id="waveformCanvas" width="380" height="70"></canvas>
-
-        <!-- Timer -->
         <div class="rec-timer hidden" id="recTimer">⏱ <span id="timerDisplay">0:00</span></div>
 
-        <!-- Big buttons -->
         <div class="rec-buttons">
-          <button id="btnRecord" class="rec-btn rec-btn-record">
-            <span class="rec-btn-icon">🎙️</span>
-            <span class="rec-btn-label">Record</span>
-          </button>
-          <button id="btnStopRec" class="rec-btn rec-btn-stop hidden">
-            <span class="rec-btn-icon">⏹️</span>
-            <span class="rec-btn-label">Stop</span>
-          </button>
-          <button id="btnListenBack" class="rec-btn rec-btn-listen hidden">
-            <span class="rec-btn-icon">▶️</span>
-            <span class="rec-btn-label">Listen</span>
-          </button>
-          <button id="btnTryAgain" class="rec-btn rec-btn-retry hidden">
-            <span class="rec-btn-icon">🔄</span>
-            <span class="rec-btn-label">Try Again</span>
-          </button>
+          <button id="btnRecord"     class="rec-btn rec-btn-record"><span class="rec-btn-icon">🎙️</span><span class="rec-btn-label">Record</span></button>
+          <button id="btnStopRec"    class="rec-btn rec-btn-stop hidden"><span class="rec-btn-icon">⏹️</span><span class="rec-btn-label">Stop</span></button>
+          <button id="btnListenBack" class="rec-btn rec-btn-listen hidden"><span class="rec-btn-icon">▶️</span><span class="rec-btn-label">Listen</span></button>
+          <button id="btnTryAgain"   class="rec-btn rec-btn-retry hidden"><span class="rec-btn-icon">🔄</span><span class="rec-btn-label">Try Again</span></button>
         </div>
 
-        <!-- Keep / advance -->
         <div class="advance-row">
           <button id="btnKeepNext" class="btn-keep hidden">✅ Keep It &amp; Next Slide →</button>
           <button id="btnWatchNow" class="btn-watch hidden">🎬 Done! Watch My Podcast!</button>
-          <button id="btnSkip" class="btn-skip">Skip →</button>
+          <button id="btnSkip"     class="btn-skip">Skip →</button>
         </div>
       </div>
-
     </div>
   </div>
 </main>
@@ -161,45 +137,49 @@
 <!-- ===== VIEW 4: PREVIEW ===== -->
 <main id="view-preview" class="view">
   <div class="view-content preview-view">
-    <h1>🎬 Your Cars Podcast!</h1>
+    <h1>🎬 Your Podcast!</h1>
 
     <div class="preview-wrap">
-      <div class="preview-stage" id="previewStage">
-        <!-- Slide rendered here during playback -->
-        <div class="preview-placeholder">
-          <div style="font-size:4rem">🏎️</div>
-          <p>Press Play to watch your podcast!</p>
-        </div>
-      </div>
+      <canvas id="previewCanvas" class="preview-canvas"></canvas>
       <div class="preview-meta">
         <div class="preview-title" id="previewTitle"></div>
-        <div class="preview-progress-wrap">
-          <div class="preview-progress-bar" id="previewProgressBar"></div>
-        </div>
+        <div class="preview-progress-wrap"><div class="preview-progress-bar" id="previewProgressBar"></div></div>
         <div class="preview-counter" id="previewCounter"></div>
       </div>
     </div>
 
     <div class="preview-buttons">
-      <button id="btnPlayAll" class="btn-play-all">▶️ Play Podcast!</button>
-      <button id="btnStopAll" class="btn-stop-all hidden">⏹️ Stop</button>
-      <button id="btnGoReRecord" class="btn-secondary">🎙️ Fix a Recording</button>
-      <button id="btnNewPodcast" class="btn-secondary">🔄 New Podcast</button>
+      <button id="btnPlayAll"     class="btn-play-all">▶️ Play Podcast!</button>
+      <button id="btnStopAll"     class="btn-stop-all hidden">⏹️ Stop</button>
+      <button id="btnExportVideo" class="btn-export">⬇️ Download Video</button>
+      <button id="btnGoReRecord"  class="btn-secondary">🎙️ Fix a Recording</button>
+      <button id="btnNewPodcast"  class="btn-secondary">🔄 New Podcast</button>
     </div>
 
     <div class="slides-summary" id="slidesSummary"></div>
   </div>
 </main>
 
+<!-- ===== VIDEO EXPORT MODAL ===== -->
+<div class="export-modal hidden" id="exportModal">
+  <div class="export-card">
+    <div class="export-emoji">🎬</div>
+    <h2>Making your video…</h2>
+    <div class="export-progress-wrap">
+      <div class="export-progress-track"><div class="export-progress-bar" id="exportProgressBar"></div></div>
+    </div>
+    <p id="exportMsg">Getting ready…</p>
+    <p class="export-note">Keep this tab open! Your video will download automatically.</p>
+    <p class="export-tip">💡 Best on Chrome or Firefox</p>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- CDN Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<!-- App scripts -->
 <script src="js/recorder.js"></script>
+<script src="js/animator.js"></script>
 <script src="js/app.js"></script>
-
 </body>
 </html>
